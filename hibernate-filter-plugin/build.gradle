@@ -67,8 +67,8 @@ dependencies {
     testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
 
     provided "org.grails.plugins:hibernate5"
-    provided "org.hibernate:hibernate-core:5.2.10.Final"
-    provided "org.hibernate:hibernate-ehcache:5.2.10.Final"
+    provided "org.hibernate:hibernate-core:5.1.5.Final"
+    provided "org.hibernate:hibernate-ehcache:5.1.5.Final"
 }
 
 task wrapper(type: Wrapper) {
