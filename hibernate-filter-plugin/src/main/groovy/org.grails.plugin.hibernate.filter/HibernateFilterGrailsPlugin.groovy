@@ -8,7 +8,7 @@ class HibernateFilterGrailsPlugin extends Plugin {
 
 	// the version or versions of Grails the plugin is designed for
 	def grailsVersion = "3.3.0 > *"
-	def loadAfter = ['controllers', 'domainClasses', 'hibernate', 'hibernate5']
+	List loadAfter = ['controllers', 'hibernate5', 'services']
 	def observe = ['*']
 	def pluginExcludes = []
 
@@ -40,11 +40,7 @@ class HibernateFilterGrailsPlugin extends Plugin {
 
     Closure doWithSpring() {{->
 
-		def domainClasses = grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE)*.clazz
-
-		hibernateConnectionSourceFactory(HibernateFilterConnectionSourceFactory, domainClasses as Class[]) { bean ->
-			bean.autowire = true
-		}
+		hibernateFilterBinder(HibernateFilterBinder)
 
         hibernateFilterInterceptor(HibernateFilterInterceptor) {
             sessionFactory = ref('sessionFactory')
