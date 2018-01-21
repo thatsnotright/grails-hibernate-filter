@@ -1,6 +1,7 @@
 package org.grails.plugin.hibernate.filter
 
-import grails.core.GrailsDomainClass
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.hibernate.boot.spi.InFlightMetadataCollector
 import org.hibernate.engine.spi.FilterDefinition
 import org.hibernate.mapping.PersistentClass
@@ -16,15 +17,16 @@ class HibernateFilterBuilder {
     private Logger log = LoggerFactory.getLogger(getClass())
 
     InFlightMetadataCollector mappings
-    GrailsDomainClass domainClass
+    PersistentEntity persistentEntity
     PersistentClass persistentClass
 
-    HibernateFilterBuilder(InFlightMetadataCollector mappings, GrailsDomainClass domainClass, PersistentClass persistentClass) {
-        this.domainClass = domainClass
+    HibernateFilterBuilder(InFlightMetadataCollector mappings, PersistentEntity persistentEntity, PersistentClass persistentClass) {
+        this.persistentEntity = persistentEntity
         this.mappings = mappings
         this.persistentClass = persistentClass
 
-        Closure filtersClosure = domainClass.getPropertyValue('hibernateFilters')
+        ClassPropertyFetcher propertyFetcher = ClassPropertyFetcher.forClass(persistentEntity.class)
+        Closure filtersClosure = (Closure) propertyFetcher.getPropertyValue('hibernateFilters')
         filtersClosure.delegate = this
         filtersClosure.resolveStrategy = Closure.DELEGATE_ONLY
         filtersClosure()
@@ -38,7 +40,7 @@ class HibernateFilterBuilder {
         }
 
         throw new HibernateFilterException(
-                "Invalid arguments in hibernateFilters closure [class:$domainClass.name, name:$name]")
+                "Invalid arguments in hibernateFilters closure [class:$persistentEntity.name, name:$name]")
     }
 
     // Add a previously registered filter
@@ -70,17 +72,17 @@ class HibernateFilterBuilder {
         // If this is a collection, add the filter to the collection,
         // else add the condition to the base class
         def entity = options.collection ?
-                mappings.getCollectionBinding("${domainClass.fullName}.$options.collection") :
+                mappings.getCollectionBinding("${persistentEntity.name}.$options.collection") :
                 persistentClass
 
         if (entity == null) {
-            if (options.collection && !domainClass.isRoot()) {
-                def clazz = domainClass.clazz.superclass
+            if (options.collection && !persistentEntity.isRoot()) {
+                def clazz = persistentEntity.parentEntity
                 while (clazz != Object && !entity) {
                     entity = mappings.getCollectionBinding("${clazz.name}.$options.collection")
                 }
                 if (!entity) {
-                    log.warn "Collection $options.collection not found in $domainClass.fullName or any superclass"
+                    log.warn "Collection $options.collection not found in $persistentEntity.name or any superclass"
                     return
                 }
             } else {
@@ -105,9 +107,9 @@ class HibernateFilterBuilder {
         }
 
         // store any domain alias proxies to be injected later
-        if (options.aliasDomain && domainClass.isRoot()) {
+        if (options.aliasDomain && persistentEntity.isRoot()) {
             DefaultHibernateFiltersHolder.addDomainAliasProxy(
-                    new HibernateFilterDomainProxy(domainClass.referenceInstance, options.aliasDomain, name))
+                    new HibernateFilterDomainProxy(persistentEntity.newInstance(), options.aliasDomain, name))
         }
     }
 }

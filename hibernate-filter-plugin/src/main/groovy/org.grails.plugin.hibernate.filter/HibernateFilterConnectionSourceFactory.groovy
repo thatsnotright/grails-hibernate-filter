@@ -7,7 +7,7 @@ import org.grails.orm.hibernate.connections.HibernateConnectionSourceFactory
  */
 class HibernateFilterConnectionSourceFactory extends HibernateConnectionSourceFactory {
 
-    public HibernateFilterConnectionSourceFactory(Class...classes) {
+    HibernateFilterConnectionSourceFactory(Class...classes) {
         super(classes)
         this.metadataContributor = new HibernateFilterBinder()
     }

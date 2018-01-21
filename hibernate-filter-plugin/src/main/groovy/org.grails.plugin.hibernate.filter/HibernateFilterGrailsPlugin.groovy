@@ -8,7 +8,7 @@ class HibernateFilterGrailsPlugin extends Plugin {
 
 	// the version or versions of Grails the plugin is designed for
 	def grailsVersion = "3.3.3 > *"
-	List loadAfter = ['controllers', 'hibernate5', 'services']
+	List loadAfter = ['controllers', 'hibernate5', 'hibernate', 'services']
 	def observe = ['*']
 	def pluginExcludes = []
 
