@@ -8,9 +8,7 @@ buildscript {
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-        classpath "gradle.plugin.com.energizedwork.webdriver-binaries:webdriver-binaries-gradle-plugin:1.1"
-        classpath "gradle.plugin.com.energizedwork:idea-gradle-plugins:1.4"
-        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.14.6"
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.14.8"
         classpath "org.grails.plugins:hibernate5:${gormVersion-".RELEASE"}"
     }
 }
@@ -21,11 +19,9 @@ group "hibernate.filter.example"
 apply plugin:"eclipse"
 apply plugin:"idea"
 apply plugin:"war"
-apply plugin:"com.energizedwork.webdriver-binaries"
-apply plugin:"com.energizedwork.idea-project-components"
 apply plugin:"org.grails.grails-web"
-apply plugin:"org.grails.grails-gsp"
 apply plugin:"asset-pipeline"
+apply plugin:"org.grails.grails-gsp"
 
 ext {
     grailsVersion = project.grailsVersion
@@ -36,13 +32,6 @@ repositories {
     mavenLocal()
     maven { url "https://repo.grails.org/grails/core" }
     maven { url "http://jcenter.bintray.com" }
-}
-
-dependencyManagement {
-    imports {
-        mavenBom "org.grails:grails-bom:$grailsVersion"
-    }
-    applyMavenExclusions false
 }
 
 dependencies {
@@ -78,20 +67,13 @@ dependencies {
     runtime "org.glassfish.web:el-impl:2.1.2-b03"
     runtime "com.h2database:h2"
     runtime "org.apache.tomcat:tomcat-jdbc"
-    runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.14.6"
+    runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.14.8"
     testCompile "org.grails:grails-gorm-testing-support"
     testCompile "org.grails:grails-web-testing-support"
-    testCompile "org.grails.plugins:geb"
-    testCompile "org.grails:grails-test-mixins:3.3.0.RC1"
-    testRuntime "org.seleniumhq.selenium:selenium-chrome-driver:3.6.0"
-    testRuntime "org.seleniumhq.selenium:selenium-firefox-driver:3.6.0"
-    testRuntime "org.seleniumhq.selenium:selenium-remote-driver:3.6.0"
-    testRuntime "org.seleniumhq.selenium:selenium-api:3.6.0"
-}
-
-webdriverBinaries {
-    chromedriver '2.32'
-    geckodriver '0.18.0'
+    testCompile "org.grails.plugins:geb:1.1.2"
+    testRuntime "org.seleniumhq.selenium:selenium-chrome-driver:2.47.1"
+    testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
+    testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
 }
 
 tasks.withType(Test) {
@@ -107,6 +89,8 @@ task wrapper(type: Wrapper) {
 bootRun {
     jvmArgs('-Dspring.output.ansi.enabled=always')
     addResources = true
+    String springProfilesActive = 'spring.profiles.active'
+    systemProperty springProfilesActive, System.getProperty(springProfilesActive)
 }
 
 assets {
