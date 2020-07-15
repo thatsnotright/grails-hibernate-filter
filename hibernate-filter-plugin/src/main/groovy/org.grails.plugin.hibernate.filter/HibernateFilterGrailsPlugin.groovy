@@ -1,14 +1,13 @@
 package org.grails.plugin.hibernate.filter
 
 import grails.core.GrailsClass
-import grails.core.GrailsDomainClass
 import grails.plugins.*
 import org.grails.core.artefact.DomainClassArtefactHandler
 
 class HibernateFilterGrailsPlugin extends Plugin {
 
 	// the version or versions of Grails the plugin is designed for
-	def grailsVersion = "3.2.3 > *"
+	def grailsVersion = "4.0.0 > *"
 	def loadAfter = ['controllers', 'hibernate']
 	def observe = ['*']
 	def pluginExcludes = []
@@ -40,8 +39,8 @@ class HibernateFilterGrailsPlugin extends Plugin {
 	}
 
     Closure doWithSpring() {{->
-        def domainClasses = grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE)
-                .findAll { it.mappingStrategy != "none" && it.mappingStrategy == GrailsDomainClass.GORM }
+		def mappingContext = grailsApplication.getMappingContext()
+        def domainClasses = mappingContext.getPersistentEntities()
                 .collect { it.getClazz() }
         hibernateConnectionSourceFactory(HibernateFilterConnectionSourceFactory, domainClasses as Class[])
 

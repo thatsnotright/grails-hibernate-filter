@@ -1,9 +1,9 @@
 package hibernate.filter.example
 
-import grails.transaction.Rollback
+import grails.gorm.transactions.Rollback
 import org.hibernate.SessionFactory
 import spock.lang.Specification
-import grails.test.mixin.integration.Integration
+import grails.testing.mixin.integration.Integration
 
 @Integration
 @Rollback
